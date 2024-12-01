@@ -2,177 +2,199 @@
 
 const readlineSync = require("readline-sync");
 
-// introducing new technical variables
-let hardcoreMode = false;
-let userName = "stranger";
-let gameExited = false;
-let bulls = 0;
-let userTries = 0;
-let maxAttempts = Infinity;
-let secretNumberGuess = "";
-let digitsOfSecretNumber = 0;
-let secretNumberArr = [];
-
-// motivational messages picker function
-function pickMotivationalMessage(bulls, cows) {
-  const motivationalMessages = [
-    `You've got ${bulls} bulls and ${cows} cows. Keep pushing!`,
-    `${bulls} bulls are in the ring, but ${cows} are still running. Are you even trying?`,
-    `You've got ${bulls} bulls and ${cows} cows... Is that all you've got? Try harder!`,
-    `${bulls} bulls and ${cows} cows. Are we aiming for victory or just grazing around?`,
-    `${bulls} bulls locked in, ${cows} wandering. Are you playing or just guessing blindly?`,
-  ];
-  const randomNum = Math.floor(Math.random() * motivationalMessages.length);
-  return motivationalMessages[randomNum];
-}
-
-// asking for username
-function askUserName() {
-  userName = readlineSync.question("May I have your name? ");
-  if (userName === "") {
-    userName = "stranger";
-    console.log(`Hello, ${userName}`);
-  } else {
-    console.log(`Greetings ${userName}!`);
+class Game {
+  constructor() {
+    // State (variables)
+    this.hardcoreMode = false;
+    this.userName = "stranger";
+    this.gameExited = false;
+    this.bulls = 0;
+    this.userTries = 0;
+    this.maxAttempts = Infinity;
+    this.secretNumberGuess = "";
+    this.digitsOfSecretNumber = 0;
+    this.secretNumberArr = [];
   }
-}
 
-// setting difficulty level
-function askDifficultyLevel() {
-  if (readlineSync.keyInYN(`Are you interested in hardcore mode? `)) {
-    console.log(`Welcome to my dungeon, mortal!..`);
-
-    // setting the number of tries
-    maxAttempts = readlineSync.questionInt(
-      "How many breaths do you want to take? "
-    );
-    digitsOfSecretNumber = 4;
-    hardcoreMode = true;
-  } else {
-    console.log(`ATTENTION! ${userName} is a chicken!`);
-    digitsOfSecretNumber = 3;
-  }
-}
-
-function generateSecretNumberArr() {
-  // generating an array with 10 elements (numbers 0-9)
-  const digits = [...Array(10).keys()];
-
-  // shuffling them with sort mechanism and Math.random()
-  const randomDigitsArr = digits.sort(() => Math.random() - 0.5);
-
-  // slicing the first 4 digits of an array to receive a secret number + map() to make strings
-  secretNumberArr = randomDigitsArr.slice(0, digitsOfSecretNumber).map(String);
-
-  console.log(secretNumberArr); // THE ANSWER
-}
-
-function playGame() {
-  do {
-    // number of tries for the user
-    userTries++;
-
-    // hardcore vs regular mode
-    if (hardcoreMode === false) {
-      secretNumberGuess = readlineSync.question(
-        `Go ahead, ${userName}, try to guess a number I have in mind: `
-      );
+  // asking for username
+  askUserName() {
+    this.userName = readlineSync.question("May I have your name? ");
+    if (this.userName === "") {
+      this.userName = "stranger";
+      console.log(`Hello, ${this.userName}`);
     } else {
-      secretNumberGuess = readlineSync.question(
-        `The number is ${digitsOfSecretNumber} digits long, but don't think too hard, mortal. It won't help you...`
-      );
+      console.log(`Greetings ${this.userName}!`);
     }
+  }
 
-    // exiting on pressing "enter" and its hardcore mode spin
-    if (
-      secretNumberGuess === "" &&
-      userTries < maxAttempts &&
-      hardcoreMode === true
-    ) {
+  // setting difficulty level
+  askDifficultyLevel() {
+    if (readlineSync.keyInYN(`Are you interested in hardcore mode? `)) {
+      console.log(`Welcome to my dungeon, mortal!..`);
+
+      // setting the number of tries
+      this.maxAttempts = readlineSync.questionInt(
+        "How many breaths do you want to take? "
+      );
+      this.digitsOfSecretNumber = 4;
+      this.hardcoreMode = true;
+    } else {
+      console.log(`ATTENTION! ${this.userName} is a chicken!`);
+      this.digitsOfSecretNumber = 3;
+    }
+  }
+
+  generateSecretNumberArr() {
+    // generating an array with 10 elements (numbers 0-9)
+    const digits = [...Array(10).keys()];
+
+    // shuffling them with sort mechanism and Math.random()
+    const randomDigitsArr = digits.sort(() => Math.random() - 0.5);
+
+    // slicing the first 4 digits of an array to receive a secret number + map() to make strings
+    this.secretNumberArr = randomDigitsArr
+      .slice(0, this.digitsOfSecretNumber)
+      .map(String);
+
+    console.log(this.secretNumberArr); // THE ANSWER
+  }
+
+  // motivational messages picker function
+  pickMotivationalMessage(bulls, cows) {
+    const motivationalMessages = [
+      `You've got ${bulls} bulls and ${cows} cows. Keep pushing!`,
+      `${bulls} bulls are in the ring, but ${cows} are still running. Are you even trying?`,
+      `You've got ${bulls} bulls and ${cows} cows... Is that all you've got? Try harder!`,
+      `${bulls} bulls and ${cows} cows. Are we aiming for victory or just grazing around?`,
+      `${bulls} bulls locked in, ${cows} wandering. Are you playing or just guessing blindly?`,
+    ];
+    const randomNum = Math.floor(Math.random() * motivationalMessages.length);
+    return motivationalMessages[randomNum];
+  }
+
+  // core game function
+  playGame() {
+    do {
+      // number of tries for the user
+      this.userTries++;
+
+      // hardcore vs regular mode
+      if (this.hardcoreMode === false) {
+        this.secretNumberGuess = readlineSync.question(
+          `Go ahead, ${this.userName}, try to guess a number I have in mind: `
+        );
+      } else {
+        this.secretNumberGuess = readlineSync.question(
+          `The number is ${this.digitsOfSecretNumber} digits long, but don't think too hard, mortal. It won't help you...`
+        );
+      }
+
+      // exiting on pressing "enter" and its hardcore mode spin
+      if (
+        this.secretNumberGuess === "" &&
+        this.userTries < this.maxAttempts &&
+        this.hardcoreMode === true
+      ) {
+        console.log(
+          `You ain't going nowhere! You have ${
+            this.maxAttempts - this.userTries
+          } more breaths...`
+        );
+      } else if (this.secretNumberGuess === "") {
+        this.gameExited = true;
+        break;
+      }
+
+      // numbers/STRING has to be N digits long
+      if (
+        this.secretNumberGuess.length !== this.digitsOfSecretNumber &&
+        this.hardcoreMode === false
+      ) {
+        console.log(
+          `The number has to be ${this.digitsOfSecretNumber} digits long`
+        );
+        continue;
+      } else if (
+        this.secretNumberGuess.length !== this.digitsOfSecretNumber &&
+        this.hardcoreMode === true &&
+        this.secretNumberGuess !== ""
+      ) {
+        console.log(`Mmmmm... You're crazy!.. I like that!`);
+      }
+
+      // making an array out of user's input
+      const secretNumberGuessArr = [...this.secretNumberGuess];
+
+      // looking for direct hits "BULLS" true/false
+      const comparisons = this.secretNumberArr.map(
+        (value, index) => value === secretNumberGuessArr[index]
+      );
+
+      // calculating the number of bulls
+      this.bulls = comparisons.reduce((count, result) => {
+        return count + (result === true ? 1 : 0);
+      }, 0);
+
+      // looking for global hits "BULLS" and "COWS" together
+      const bullsAndCowsArr = this.secretNumberArr.filter((value) =>
+        secretNumberGuessArr.includes(value)
+      );
+      const bullsAndCows = bullsAndCowsArr.reduce((acc, el) => acc + 1, 0);
+
+      // calculating number of cows
+      const cows = bullsAndCows - this.bulls;
+
+      // providing feedback to the player
+      if (
+        this.bulls < this.digitsOfSecretNumber &&
+        this.hardcoreMode === false
+      ) {
+        console.log(this.pickMotivationalMessage(this.bulls, cows));
+      }
+    } while (this.bulls !== this.digitsOfSecretNumber && this.userTries < this.maxAttempts);
+  }
+
+  resetGame() {
+    this.bulls = 0;
+    this.userTries = 0;
+    this.gameExited = false;
+    this.maxAttempts = Infinity;
+    this.secretNumberGuess = "";
+    this.secretNumberArr = [];
+  }
+
+  exitGame() {
+    // condition for exiting the game
+    if (this.userTries === this.maxAttempts) {
+      console.log(`Now, your soul belongs to me... hahahahahahaha`);
+    } else if (this.gameExited) {
+      console.log(`Better luck next time!`);
+    } else {
       console.log(
-        `You ain't going nowhere! You have ${
-          maxAttempts - userTries
-        } more breaths...`
+        `Congratulations, ${this.userName}! You've guessed it correctly!`
       );
-    } else if (secretNumberGuess === "") {
-      gameExited = true;
-      break;
-    }
 
-    // numbers/STRING has to be N digits long
-    if (
-      secretNumberGuess.length !== digitsOfSecretNumber &&
-      hardcoreMode === false
-    ) {
-      console.log(`The number has to be ${digitsOfSecretNumber} digits long`);
-      continue;
-    } else if (
-      secretNumberGuess.length !== digitsOfSecretNumber &&
-      hardcoreMode === true &&
-      secretNumberGuess !== ""
-    ) {
-      console.log(`Mmmmm... You're crazy!.. I like that!`);
-    }
-
-    // making an array out of user's input
-    const secretNumberGuessArr = [...secretNumberGuess];
-
-    // looking for direct hits "BULLS" true/false
-    const comparisons = secretNumberArr.map(
-      (value, index) => value === secretNumberGuessArr[index]
-    );
-
-    // calculating the number of bulls
-    bulls = comparisons.reduce((count, result) => {
-      return count + (result === true ? 1 : 0);
-    }, 0);
-
-    // looking for global hits "BULLS" and "COWS" together
-    const bullsAndCowsArr = secretNumberArr.filter((value) =>
-      secretNumberGuessArr.includes(value)
-    );
-    const bullsAndCows = bullsAndCowsArr.reduce((acc, el) => acc + 1, 0);
-
-    // calculating number of cows
-    const cows = bullsAndCows - bulls;
-
-    // printing stats for references
-    if (bulls < digitsOfSecretNumber && hardcoreMode === false) {
-      console.log(pickMotivationalMessage(bulls, cows));
-    }
-  } while (bulls !== digitsOfSecretNumber && userTries < maxAttempts);
-}
-
-function exitGame() {
-  // condition for exiting the game
-  if (userTries === maxAttempts) {
-    console.log(`Now, your soul belongs to me... hahahahahahaha`);
-  } else if (gameExited) {
-    console.log(`Better luck next time!`);
-  } else {
-    console.log(`Congratulations, you've guessed it correctly!`);
-
-    if (readlineSync.keyInYN(`Do you want another round, champ? `)) {
-      generateSecretNumberArr();
-      playGame();
-      exitGame();
-    } else {
-      console.log(`Bye......`);
+      // ask the user if they want to play again
+      if (readlineSync.keyInYN(`Do you want another round, champ? `)) {
+        this.resetGame();
+        this.generateSecretNumberArr();
+        this.playGame();
+        this.exitGame();
+      } else {
+        console.log(`Bye......`);
+      }
     }
   }
 }
 
-askUserName();
+const game = new Game();
 
-askDifficultyLevel();
+game.askUserName();
 
-generateSecretNumberArr();
+game.askDifficultyLevel();
 
-playGame();
+game.generateSecretNumberArr();
 
-exitGame();
+game.playGame();
 
-// the main purpose of classes:
-// one puts in a state only things that matter in their particualr program
-// FIELDS: username and gamemode << game session
-// ACTIONS (functions): actionts that change the state of the obj
+game.exitGame();
