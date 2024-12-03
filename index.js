@@ -97,8 +97,6 @@ class Game {
 
   // core game function
   playGame() {
-    
-    
     this.gameStats.gamesPlayed++;
     do {
       // number of tries for the user
@@ -138,7 +136,10 @@ class Game {
       }
 
       // numbers/STRING has to be N digits long
-      if (
+      if (!this.hardcoreMode && isNaN(this.secretNumberGuess)) {
+        console.log(`Enter a ${this.digitsOfSecretNumber}-digit number`);
+        continue;
+      } else if (
         this.secretNumberGuess.length !== this.digitsOfSecretNumber &&
         !this.hardcoreMode
       ) {
@@ -232,10 +233,9 @@ class Game {
     console.log(`\nName of the player: ${this.gameStats.user}
     \nDifficulty level: ${this.gameStats.difficulty}
     \nNumber of games played: ${this.gameStats.gamesPlayed}
-    \nAverage number of tries per correct guess: ${
-      this.avgGuess = this.gameStats.tries.reduce((acc, el) => acc + el,
-      0) / this.gameStats.tries.length
-    }`);
+    \nAverage number of tries per correct guess: ${(this.avgGuess =
+      this.gameStats.tries.reduce((acc, el) => acc + el, 0) /
+      this.gameStats.tries.length)}`);
   }
 }
 
